@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: MealDesigner.Client
+        working-directory: ./MealDesigner.Client
       
     steps:
       - uses: actions/checkout@v4

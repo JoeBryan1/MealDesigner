@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
-import { Layout } from './components/Layout';
-import {Provider} from "./components/ui/provider.tsx";
-import { Theme } from "@chakra-ui/react"
+import {NavMenu} from "@/components/NavMenu.tsx";
 
 
 export default class App extends Component {
@@ -11,14 +9,15 @@ export default class App extends Component {
 
     render() {
         return (
-            <Layout>
+            <div>
+                <NavMenu />
                 <Routes>
                     {AppRoutes.map((route, index) => {
                         const { element, ...rest } = route;
                         return <Route key={index} {...rest} element={element} />;
                     })}
                 </Routes>
-            </Layout>
+            </div>
         );
     }
 }

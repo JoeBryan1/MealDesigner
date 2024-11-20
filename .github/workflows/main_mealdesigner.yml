@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: MealDesigner.Client
+        working-directory: ./MealDesigner.Client
       
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: release.zip
+          path: ./MealDesigner.Client/release.zip
 
   deploy:
     runs-on: ubuntu-latest

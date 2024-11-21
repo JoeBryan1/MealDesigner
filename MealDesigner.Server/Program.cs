@@ -28,7 +28,6 @@ builder.Services.AddTransient<IPromptService, PromptService>();
 // Load .env file
 Env.Load();
 
-
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DBCon");
 if (string.IsNullOrEmpty(connectionString))
 {

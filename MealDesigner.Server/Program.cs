@@ -28,7 +28,7 @@ builder.Services.AddTransient<IPromptService, PromptService>();
 // Load .env file
 Env.Load();
 
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DBCon");
+var connectionString = Environment.GetEnvironmentVariable("AZURE_MYSQL_CONNECTIONSTRING");
 if (string.IsNullOrEmpty(connectionString))
 {
     throw new Exception(

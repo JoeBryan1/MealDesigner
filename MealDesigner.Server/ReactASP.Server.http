@@ -1,6 +1,0 @@
-@ReactASP.Server_HostAddress = http://localhost:5244
-
-GET {{ReactASP.Server_HostAddress}}/FoodItem
-Accept: application/json
-
-###

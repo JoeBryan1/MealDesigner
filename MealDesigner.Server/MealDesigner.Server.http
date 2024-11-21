@@ -1,0 +1,6 @@
+@MealDesigner.Server_HostAddress = http://localhost:5244
+
+GET {{MealDesigner.Server_HostAddress}}/FoodItem
+Accept: application/json
+
+###

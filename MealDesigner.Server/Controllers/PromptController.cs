@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ReactASP.Server.Service;
+using MealDesigner.Server.Service;
 
-namespace ReactASP.Server.Controllers;
+namespace MealDesigner.Server.Controllers;
 
 
 [ApiController]

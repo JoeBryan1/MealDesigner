@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ReactASP.Server.Service;
+namespace MealDesigner.Server.Service;
 
 public interface IPromptService
 {
@@ -21,8 +21,7 @@ public class PromptService : IPromptService
 
     public async Task<string> TriggerOpenAI(string prompt)
     {
-        var apiKey =
-            "";
+        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API");
         var baseUrl = "";
         
         HttpClient client = new HttpClient();

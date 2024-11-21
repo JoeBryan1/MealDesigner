@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ReactASP.Server.Entities;
+using MealDesigner.Server.Entities;
 
-namespace ReactASP.Server.Data;
+namespace MealDesigner.Server.Data;
 
 public class DataContext : DbContext
 {

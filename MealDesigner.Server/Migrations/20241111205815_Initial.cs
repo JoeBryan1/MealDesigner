@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace ReactASP.Server.Migrations
+namespace MealDesigner.Server.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

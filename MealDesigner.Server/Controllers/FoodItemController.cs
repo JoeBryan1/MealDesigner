@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ReactASP.Server.Data;
-using ReactASP.Server.Entities;
+using MealDesigner.Server.Data;
+using MealDesigner.Server.Entities;
 
-namespace ReactASP.Server.Controllers
+namespace MealDesigner.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

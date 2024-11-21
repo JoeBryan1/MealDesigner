@@ -1,4 +1,4 @@
-﻿namespace ReactASP.Server.Entities;
+﻿namespace MealDesigner.Server.Entities;
 
 public class FoodItem
 {

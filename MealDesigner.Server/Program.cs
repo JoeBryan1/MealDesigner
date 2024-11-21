@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using ReactASP.Server.Data;
-using DotNetEnv;
-using ReactASP.Server.Service;
+using MealDesigner.Server.Data;
+using MealDesigner.Server.Service;
 
 
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -25,14 +24,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IPromptService, PromptService>();
 
-// Load .env file
-Env.Load();
-
 var connectionString = Environment.GetEnvironmentVariable("AZURE_MYSQL_CONNECTIONSTRING");
 if (string.IsNullOrEmpty(connectionString))
 {
     throw new Exception(
-        "Connection string not found. Ensure the .env file is correctly configured and placed in the root directory.");
+        "Connection string not found. Ensure the connection string is set in environment variables.");
 }
 builder.Services.AddDbContext<DataContext>(options =>
 {

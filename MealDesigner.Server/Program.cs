@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using MealDesigner.Server.Data;
 using MealDesigner.Server.Service;
 
-
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,15 +23,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IPromptService, PromptService>();
 
-var connectionString = Environment.GetEnvironmentVariable("AZURE_MYSQL_CONNECTIONSTRING");
-if (string.IsNullOrEmpty(connectionString))
-{
-    throw new Exception(
-        "Connection string not found. Ensure the connection string is set in environment variables.");
-}
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString(connectionString));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 var app = builder.Build();

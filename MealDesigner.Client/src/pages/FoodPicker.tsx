@@ -49,7 +49,7 @@ const FoodPicker= () => {
     let selectedFoodItemId: number;
     
     useEffect(() => {
-        fetch('api/fooditem/names')
+        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/names')
             .then((results) => {
                 return results.json();
             })
@@ -59,7 +59,7 @@ const FoodPicker= () => {
     }, [])
     
     useEffect(() => {
-        fetch('api/fooditem/groups')
+        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/groups')
             .then((results) => {
                 return results.json();
             })
@@ -73,7 +73,7 @@ const FoodPicker= () => {
         if (id === undefined)
             return;
         
-        fetch('api/fooditem/'+id)
+        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/'+id)
             .then((results) => {
             return results.json();
             })

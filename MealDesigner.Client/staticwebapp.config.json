@@ -1,0 +1,13 @@
+﻿{
+  "routes": [
+    {
+      "route": "/api/*",
+      "methods": ["PUT", "POST", "PATCH", "DELETE"],
+      "allowedRoles": ["administrator"]
+    }
+  ],
+  "globalHeaders": {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS"
+  }
+}

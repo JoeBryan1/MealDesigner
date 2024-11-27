@@ -1,7 +1,7 @@
 ﻿{
   "routes": [
     {
-      "route": "/api/*",
+      "route": "/api*",
       "methods": ["GET"]
     }
   ]

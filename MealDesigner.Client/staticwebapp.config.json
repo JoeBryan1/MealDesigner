@@ -2,8 +2,7 @@
   "routes": [
     {
       "route": "/api/*",
-      "methods": ["PUT", "POST", "PATCH", "DELETE"],
-      "allowedRoles": ["administrator"]
+      "methods": ["PUT", "POST", "PATCH", "DELETE"]
     }
   ],
   "globalHeaders": {

@@ -5,6 +5,8 @@ name: Build and deploy ASP.Net Core app to Azure Web App - meal-designer-api
 
 on:
   push:
+    paths:
+      - 'MealDesigner.Client/**'
     branches:
       - main
   workflow_dispatch:

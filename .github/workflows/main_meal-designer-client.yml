@@ -5,6 +5,8 @@ name: Build and deploy Node.js app to Azure Web App - meal-designer-client
 
 on:
   push:
+    paths:
+      - 'MealDesigner.Client/**'
     branches:
       - main
   workflow_dispatch:
@@ -12,6 +14,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./MealDesigner.Server
 
     steps:
       - uses: actions/checkout@v4

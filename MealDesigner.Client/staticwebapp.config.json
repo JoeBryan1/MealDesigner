@@ -1,8 +1,13 @@
-﻿{
+{
   "routes": [
     {
       "route": "/api/*",
-      "methods": ["PUT", "POST", "PATCH", "DELETE"]
+      "methods": [
+        "PUT",
+        "POST",
+        "PATCH",
+        "DELETE"
+      ]
     }
   ],
   "globalHeaders": {

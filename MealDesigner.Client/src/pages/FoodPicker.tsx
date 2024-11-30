@@ -99,6 +99,8 @@ const FoodPicker= () => {
                       ))}
                   </SelectContent>
               </Select>
+
+              { selectedFoodGroup != "" &&
               
               <Select onValueChange={(value) => selectedFoodItemId=Number(value)}>
                   <SelectTrigger className="w-[180px]">
@@ -113,6 +115,7 @@ const FoodPicker= () => {
                   </SelectContent>
               </Select>
 
+              }
               
               <Button onClick={() => addSelectedFood(selectedFoodItemId)}>Add to Selection</Button>
               <div className="flex space-x-5">
@@ -123,6 +126,7 @@ const FoodPicker= () => {
                                 <h3 className="text-lg font-semibold text-gray-900">
                                     {food.name}
                                 </h3>
+                                <img src={"https://mdstorageac.blob.core.windows.net/fooditempics/"+food.id+".png"}></img>
                             </CardTitle>
 
                             <Collapsible className="w-[350px] space-y-2">

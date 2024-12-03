@@ -1,18 +1,10 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+using MealDesigner.Server.Interfaces;
 
 namespace MealDesigner.Server.Service;
-
-public interface IPromptService
-{
-    Task<string> TriggerOpenAI(string prompt);
-}
 
 public class PromptService : IPromptService
 {

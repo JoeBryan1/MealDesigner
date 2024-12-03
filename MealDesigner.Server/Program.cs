@@ -1,21 +1,31 @@
+using MealDesigner.Server.Configuration;
 using Microsoft.EntityFrameworkCore;
 using MealDesigner.Server.Data;
-using MealDesigner.Server.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+
+builder.Services.AddDbContextFactory<CosmosDbContext>(optionsBuilder => 
+    optionsBuilder
+        .UseCosmos(
+            connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+            databaseName: "MealDesigner",
+            cosmosOptionsAction: options =>
+            {
+                options.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Direct);
+                options.MaxRequestsPerTcpConnection(16);
+                options.MaxTcpConnectionsPerEndpoint(32);
+            }
+            ));
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<IPromptService, PromptService>();
 
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.ResolveDependencies();
 
 var app = builder.Build();
 

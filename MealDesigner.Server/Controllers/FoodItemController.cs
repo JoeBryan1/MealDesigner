@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MealDesigner.Server.Data;
-using MealDesigner.Server.Entities;
+using MealDesigner.Server.Interfaces;
+using MealDesigner.Server.Models;
+using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MealDesigner.Server.Controllers
 {
@@ -9,53 +10,62 @@ namespace MealDesigner.Server.Controllers
     [Route("api/[controller]")]
     public class FoodItemController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IFoodItemService _foodItemService;
 
-        public FoodItemController(DataContext context)
+        public FoodItemController(IFoodItemService foodItemService)
         {
-            _context = context;
+            _foodItemService = foodItemService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<FoodItem>>> GetAllFoodItems()
+        [HttpGet("{foodItemId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int foodItemId)
         {
-            var foodItem = await _context.FoodItems.ToArrayAsync();
-            
+            var foodItem = await _foodItemService.GetById(foodItemId);
+
+            if (foodItem == null) return NotFound();
+
             return Ok(foodItem);
-        }
-
-        [HttpGet("names")]
-        public async Task<ActionResult<List<FoodItemName>>> GetAllFoodItemNames()
-        {
-            var foodItemName = await _context.FoodItems.Select(o => new FoodItemName()
-            {
-                Id = o.Id,
-                Name = o.Name,
-                FoodGroup = o.FoodGroup
-                
-            }).ToListAsync();
-            
-            return Ok(foodItemName);
         }
         
-        [HttpGet("{id}")]
-        public async Task<ActionResult<List<FoodItem>>> GetFoodItem(int id)
+        [HttpGet("foodGroups")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllFoodGroups()
         {
-            var foodItem = await _context.FoodItems.FindAsync(id);
+            var foodItemGroups = await _foodItemService.GetAllFoodGroups();
 
-            if (foodItem == null)
-                return NotFound();
-            
-            return Ok(foodItem);
+            if (foodItemGroups.IsNullOrEmpty()) return NotFound();
+
+            return Ok(foodItemGroups);
+        }
+        
+        
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update(FoodItem product)
+        {
+            var result = await _foodItemService.Update(product);
+
+            if (result == null) return BadRequest();
+
+            return Ok(result);
         }
 
-        [HttpGet("groups")]
-        public async Task<ActionResult<List<string>>> GetFoodItemGroups()
+        [HttpDelete("{productId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete(int foodItemId)
         {
-            var foodItemGroups = await _context.FoodItems.Select(o => o.FoodGroup)
-                .Distinct().ToListAsync();
-            
-            return Ok(foodItemGroups);
+            var result = await _foodItemService.Delete(foodItemId);
+
+            if (!result) return BadRequest();
+
+            return Ok();
         }
     }
 }

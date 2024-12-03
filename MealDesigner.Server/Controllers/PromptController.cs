@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MealDesigner.Server.Service;
+using MealDesigner.Server.Interfaces;
 
 namespace MealDesigner.Server.Controllers;
 

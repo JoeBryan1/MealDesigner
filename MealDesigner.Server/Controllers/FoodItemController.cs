@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using MealDesigner.Server.Interfaces;
-using MealDesigner.Server.Models;
-using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MealDesigner.Server.Controllers

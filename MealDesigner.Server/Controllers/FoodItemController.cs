@@ -42,30 +42,5 @@ namespace MealDesigner.Server.Controllers
 
             return Ok(foodItemGroups);
         }
-        
-        
-        [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(FoodItem product)
-        {
-            var result = await _foodItemService.Update(product);
-
-            if (result == null) return BadRequest();
-
-            return Ok(result);
-        }
-
-        [HttpDelete("{productId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Delete(int foodItemId)
-        {
-            var result = await _foodItemService.Delete(foodItemId);
-
-            if (!result) return BadRequest();
-
-            return Ok();
-        }
     }
 }

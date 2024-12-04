@@ -17,8 +17,8 @@ public class PromptService : IPromptService
 
     public async Task<string> TriggerOpenAI(string prompt)
     {
-        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API");
-        var baseUrl = "";
+        var apiKey = _configuration["OpenAISetting:APIKey"];
+        var baseUrl = _configuration["OpenAISetting:BaseUrl"];
         
         HttpClient client = new HttpClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);

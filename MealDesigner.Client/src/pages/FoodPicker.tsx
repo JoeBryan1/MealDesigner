@@ -1,4 +1,6 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { SyntheticEvent } from 'react';
+
+import { useState, useEffect } from 'react';
 
 import { ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -81,8 +83,8 @@ const FoodPicker= () => {
             })
     }
     
-    const replaceImage = (error: React.ChangeEvent<HTMLInputElement>) => {
-        error.target.src = "../../public/DefaultImage.png";
+    const replaceImage = (error: SyntheticEvent<HTMLImageElement, Event>) => {
+        error.currentTarget.src = "../../public/DefaultImage.png";
     }
     
         

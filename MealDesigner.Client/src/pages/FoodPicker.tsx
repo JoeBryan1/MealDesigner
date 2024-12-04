@@ -23,14 +23,8 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 
-type FoodItemName = {
-    id: number;
-    name: string;
-    foodGroup: string;
-}
-
 type FoodItem = {
-    id: number;
+    foodItemId: number;
     name: string;
     latinName: string;
     description: string;
@@ -42,24 +36,14 @@ type FoodItem = {
 const FoodPicker= () => {
 
     const [foodItemGroups, setFoodItemGroups] = useState<string[]>([]);
-    const [foodNames, setFoodNames] = useState<FoodItemName[]>([]);
+    const [foodNames, setFoodNames] = useState<FoodItem[]>([]);
     const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
     
     const [selectedFoodGroup, setSelectedFoodGroup] = useState<string>("");
     let selectedFoodItemId: number;
     
     useEffect(() => {
-        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/names')
-            .then((results) => {
-                return results.json();
-            })
-            .then(data => {
-                setFoodNames(data);
-            })
-    }, [])
-    
-    useEffect(() => {
-        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/groups')
+        fetch('https://localhost:7043/api/fooditem/foodgroups')
             .then((results) => {
                 return results.json();
             })
@@ -68,12 +52,25 @@ const FoodPicker= () => {
             })
     }, [])
     
+    const getFoodItemsFromGroup = (foodGroup: string) =>
+    {
+        setSelectedFoodGroup(foodGroup);
+        
+        fetch('https://localhost:7043/api/fooditem/foodgroup/'+foodGroup)
+            .then((results) => {
+                return results.json();
+            })
+            .then(data => {
+                setFoodNames(data);
+            });
+    }
+    
     const addSelectedFood = (id: number) =>
     {
         if (id === undefined)
             return;
         
-        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/'+id)
+        fetch('https://localhost:7043/api/fooditem/'+id)
             .then((results) => {
             return results.json();
             })
@@ -84,10 +81,14 @@ const FoodPicker= () => {
             })
     }
     
+    const replaceImage = (error: React.ChangeEvent<HTMLInputElement>) => {
+        error.target.src = "../../public/DefaultImage.png";
+    }
     
+        
       return (
           <main>
-              <Select onValueChange={(value) => setSelectedFoodGroup(value)}>
+              <Select onValueChange={(foodGroup) => getFoodItemsFromGroup(foodGroup)}>
                   <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select a food group" />
                   </SelectTrigger>
@@ -99,7 +100,7 @@ const FoodPicker= () => {
                       ))}
                   </SelectContent>
               </Select>
-
+    
               { selectedFoodGroup != "" &&
               
               <Select onValueChange={(value) => selectedFoodItemId=Number(value)}>
@@ -107,28 +108,31 @@ const FoodPicker= () => {
                       <SelectValue placeholder="Select a food item"/>
                   </SelectTrigger>
                   <SelectContent>
-                      {foodNames.map((foodItem) => {return foodItem.foodGroup === selectedFoodGroup ?
-                          <SelectItem value={foodItem.id.toString()} key={foodItem.id}>
+                      {foodNames.map((foodItem) => 
+                          <SelectItem value={foodItem.foodItemId.toString()} key={foodItem.foodItemId}>
                               {foodItem.name}
                           </SelectItem>
-                          : null })}
+                      )}
                   </SelectContent>
               </Select>
-
+    
               }
               
               <Button onClick={() => addSelectedFood(selectedFoodItemId)}>Add to Selection</Button>
               <div className="flex space-x-5">
                   {selectedFoods.map((food) => 
-                    <Card key={food.id} className={"w-[400px]"}>
+                    <Card key={food.foodItemId} className={"w-[400px]"}>
                         <CardHeader>
                             <CardTitle>
                                 <h3 className="text-lg font-semibold text-gray-900">
                                     {food.name}
                                 </h3>
-                                <img src={"https://mdstorageac.blob.core.windows.net/fooditempics/"+food.id+".png"}></img>
+                                <img 
+                                    src={"https://mdstorageac.blob.core.windows.net/fooditempics/"+food.foodItemId+".png"}
+                                    onError={(error) => replaceImage(error)}
+                                />
                             </CardTitle>
-
+    
                             <Collapsible className="w-[350px] space-y-2">
                             <div className="flex justify-between space-x-4 px-4">
                                     <h4 className="text-base font-semibold">

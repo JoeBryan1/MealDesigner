@@ -17,17 +17,23 @@ public class FoodItemService : IFoodItemService
         await _foodItemRepository.Add(foodItem);
         return foodItem;
     }
-
-    public async Task<List<string?>> GetAllFoodGroups()
-    {
-        var foodItemGroups = await _foodItemRepository.GetAllFoodGroups();
-        return foodItemGroups;
-    }
-
+    
     public async Task<FoodItem?> GetById(int foodItemId)
     {
         var foodItem = await _foodItemRepository.GetById(foodItemId);
         return foodItem;
+    }
+    
+    public async Task<List<string>> GetAllFoodGroups()
+    {
+        var foodItemGroups = await _foodItemRepository.GetAllFoodGroups();
+        return foodItemGroups;
+    }
+    
+    public async Task<List<FoodItem>> GetAllByGroup(string foodGroup)
+    {
+        var foodItemGroups = await _foodItemRepository.GetAllByGroup(foodGroup);
+        return foodItemGroups;
     }
 
     public async Task<FoodItem?> Update(FoodItem foodItem)

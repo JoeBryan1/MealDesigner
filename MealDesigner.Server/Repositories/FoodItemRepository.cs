@@ -32,12 +32,22 @@ public class FoodItemRepository : IFoodItemRepository
         return foodItem;
     }
 
-    public async Task<List<string?>> GetAllFoodGroups()
+    public async Task<List<string>> GetAllFoodGroups()
     {
         var foodItems = await _dbContext
             .FoodItems
             .Select(o => o.FoodGroup)
             .Distinct()
+            .ToListAsync();
+
+        return foodItems;
+    }
+    
+    public async Task<List<FoodItem>> GetAllByGroup(string foodGroup)
+    {
+        var foodItems = await _dbContext
+            .FoodItems
+            .Where(o => o.FoodGroup == foodGroup)
             .ToListAsync();
 
         return foodItems;
@@ -50,6 +60,13 @@ public class FoodItemRepository : IFoodItemRepository
             .FindAsync(foodItem.FoodItemId);
         
         if (existingFoodItem == null) return null;
+
+        if (existingFoodItem.FoodGroup != foodItem.FoodGroup)
+        {
+            await Delete(foodItem.FoodItemId);
+            await Add(foodItem);
+            return foodItem;
+        }
         
         existingFoodItem.Name = foodItem.Name;
         existingFoodItem.LatinName = foodItem.LatinName;
@@ -58,11 +75,12 @@ public class FoodItemRepository : IFoodItemRepository
         existingFoodItem.FoodSubgroup = foodItem.FoodSubgroup;
         existingFoodItem.WikipediaId = foodItem.WikipediaId;
         
+        _dbContext.Update(existingFoodItem);
         await _dbContext.SaveChangesAsync();
-
         return foodItem;
-    }
 
+    }
+    
     public async Task<bool> Delete(int foodItemId)
     {
         var foodItem = await _dbContext

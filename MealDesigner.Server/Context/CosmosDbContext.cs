@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MealDesigner.Server.Models;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace MealDesigner.Server.Data;
 
@@ -11,8 +12,8 @@ public class CosmosDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultContainer("foodItems");   
-        
+        modelBuilder.HasDefaultContainer("foodItems");
+
         modelBuilder.Entity<FoodItem>()
             .HasNoDiscriminator()
             .HasPartitionKey(x => x.FoodGroup)

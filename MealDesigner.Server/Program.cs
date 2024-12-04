@@ -2,10 +2,18 @@ using MealDesigner.Server.Configuration;
 using Microsoft.EntityFrameworkCore;
 using MealDesigner.Server.Data;
 
+var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:4280");
+        });
+});
 
 builder.Services.AddDbContextFactory<CosmosDbContext>(optionsBuilder => 
     optionsBuilder
@@ -37,6 +45,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 app.MapControllers();

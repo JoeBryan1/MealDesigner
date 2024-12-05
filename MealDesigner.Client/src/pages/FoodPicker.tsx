@@ -45,7 +45,7 @@ const FoodPicker= () => {
     let selectedFoodItemId: number;
     
     useEffect(() => {
-        fetch('https://localhost:7043/api/fooditem/foodgroups')
+        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/foodgroups')
             .then((results) => {
                 return results.json();
             })
@@ -58,7 +58,7 @@ const FoodPicker= () => {
     {
         setSelectedFoodGroup(foodGroup);
         
-        fetch('https://localhost:7043/api/fooditem/foodgroup/'+foodGroup)
+        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/foodgroup/'+foodGroup)
             .then((results) => {
                 return results.json();
             })
@@ -72,7 +72,7 @@ const FoodPicker= () => {
         if (id === undefined)
             return;
         
-        fetch('https://localhost:7043/api/fooditem/'+id)
+        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/'+id)
             .then((results) => {
             return results.json();
             })

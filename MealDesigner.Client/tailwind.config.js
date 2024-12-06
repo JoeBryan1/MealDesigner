@@ -10,7 +10,20 @@ module.exports = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-  		colors: {}
+  		colors: {},
+  		keyframes: {
+  			'spinner-leaf-fade': {
+  				'0%, 100%': {
+  					opacity: '0'
+  				},
+  				'50%': {
+  					opacity: '1'
+  				}
+  			}
+  		},
+  		animation: {
+  			'spinner-leaf-fade': 'spinner-leaf-fade 800ms linear infinite'
+  		}
   	}
   },
   plugins: [require("tailwindcss-animate")],

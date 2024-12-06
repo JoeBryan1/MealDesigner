@@ -1,31 +1,11 @@
-﻿import { SyntheticEvent } from 'react';
+﻿import { useState, useEffect } from 'react';
 
-import { useState, useEffect } from 'react';
-
-import { ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import {Spinner} from "@/components/ui/spinner.tsx";
+import {SelectMap, SelectMapFoodItem} from "@/components/SelectMap.tsx";
+import FoodItemCard from "@/components/FoodItemCard.tsx";
 
-import {
-    Card,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-
-type FoodItem = {
+export type FoodItem = {
     foodItemId: number;
     name: string;
     latinName: string;
@@ -44,6 +24,8 @@ const FoodPicker= () => {
     const [selectedFoodGroup, setSelectedFoodGroup] = useState<string>("");
     let selectedFoodItemId: number;
     
+    const [isLoaded, setIsLoaded] = useState(false);
+    
     useEffect(() => {
         fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/foodgroups')
             .then((results) => {
@@ -51,6 +33,7 @@ const FoodPicker= () => {
             })
             .then(data => {
                 setFoodItemGroups(data);
+                setIsLoaded(true);
             })
     }, [])
     
@@ -83,82 +66,29 @@ const FoodPicker= () => {
             })
     }
     
-    const replaceImage = (error: SyntheticEvent<HTMLImageElement, Event>) => {
-        error.currentTarget.src = "../../public/DefaultImage.png";
+    if (isLoaded) {
+        return (
+            <main>
+                <SelectMap array={foodItemGroups} 
+                           onValueChange={(foodGroup) => getFoodItemsFromGroup(foodGroup)} />
+
+                {selectedFoodGroup != "" &&
+                    <SelectMapFoodItem array={foodNames} 
+                               onValueChange={(value) => selectedFoodItemId = Number(value)} />
+                }
+
+                <Button onClick={() => addSelectedFood(selectedFoodItemId)}>Add to Selection</Button>
+                <FoodItemCard selectedFoodsArray={selectedFoods} />
+            </main>
+        )
     }
-    
-        
-      return (
-          <main>
-              <Select onValueChange={(foodGroup) => getFoodItemsFromGroup(foodGroup)}>
-                  <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select a food group" />
-                  </SelectTrigger>
-                  <SelectContent>
-                      {foodItemGroups.map((group, index) => (
-                          <SelectItem value={group} key={index}>
-                              {group}
-                          </SelectItem>
-                      ))}
-                  </SelectContent>
-              </Select>
-    
-              { selectedFoodGroup != "" &&
-              
-              <Select onValueChange={(value) => selectedFoodItemId=Number(value)}>
-                  <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select a food item"/>
-                  </SelectTrigger>
-                  <SelectContent>
-                      {foodNames.map((foodItem) => 
-                          <SelectItem value={foodItem.foodItemId.toString()} key={foodItem.foodItemId}>
-                              {foodItem.name}
-                          </SelectItem>
-                      )}
-                  </SelectContent>
-              </Select>
-    
-              }
-              
-              <Button onClick={() => addSelectedFood(selectedFoodItemId)}>Add to Selection</Button>
-              <div className="flex space-x-5">
-                  {selectedFoods.map((food) => 
-                    <Card key={food.foodItemId} className={"w-[400px]"}>
-                        <CardHeader>
-                            <CardTitle>
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {food.name}
-                                </h3>
-                                <img 
-                                    src={"https://mdstorageac.blob.core.windows.net/fooditempics/"+food.foodItemId+".png"}
-                                    onError={(error) => replaceImage(error)}
-                                />
-                            </CardTitle>
-    
-                            <Collapsible className="w-[350px] space-y-2">
-                            <div className="flex justify-between space-x-4 px-4">
-                                    <h4 className="text-base font-semibold">
-                                        Description
-                                    </h4>
-                                    <CollapsibleTrigger asChild>
-                                        <Button variant="ghost" size="sm">
-                                            <ChevronsUpDown className="h-4 w-4"/>
-                                            <span className="sr-only">Toggle</span>
-                                        </Button>
-                                    </CollapsibleTrigger>
-                                </div>
-                                <div className="flex justify-between space-x-4 px-4">
-                                    <CollapsibleContent className="space-y-2">
-                                        <CardDescription>{food.description}</CardDescription>
-                                    </CollapsibleContent>
-                                </div>
-                            </Collapsible>
-                        </CardHeader>
-                    </Card>
-                  )}
-              </div>
-          </main>
-      )
+    else {
+        return (
+            <main>
+                <Spinner size="lg" className="bg-black dark:bg-white"/>
+            </main>
+        )
+    }
 }
 
 export default FoodPicker;

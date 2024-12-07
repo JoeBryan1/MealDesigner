@@ -2,5 +2,5 @@
 
 public interface IPromptService
 {
-    Task<string> TriggerOpenAI(string prompt);
+    Task<string> TriggerOpenAiImageGen(string prompt);
 }

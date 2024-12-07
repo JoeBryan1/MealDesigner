@@ -36,7 +36,7 @@ export const SelectMapFoodItem = (props: SelectMapFoodItemProps) => {
             </SelectTrigger>
             <SelectContent>
                 {props.array.map((item, index) => (
-                    <SelectItem value={item.name} key={index}>
+                    <SelectItem value={item.foodItemId.toString()} key={index}>
                         {item.name}
                     </SelectItem>
                 ))}

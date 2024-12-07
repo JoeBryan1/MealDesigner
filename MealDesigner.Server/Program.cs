@@ -12,6 +12,8 @@ builder.Services.AddCors(options =>
         policy  =>
         {
             policy.WithOrigins("http://localhost:4280");
+            policy.WithMethods("GET", "PUT", "POST");
+            policy.AllowAnyHeader();
         });
 });
 

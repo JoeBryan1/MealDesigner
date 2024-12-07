@@ -1,24 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MealDesigner.Server.Interfaces;
+using MealDesigner.Server.Models;
 
-namespace MealDesigner.Server.Controllers;
-
-
-[ApiController]
-[Route("[controller]")]
-public class PromptController : ControllerBase
+namespace MealDesigner.Server.Controllers
 {
-    private readonly IPromptService _promptService;
-
-    public PromptController(IPromptService promptService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PromptController : ControllerBase
     {
-        _promptService = promptService;
-    }
+        private readonly IPromptService _promptService;
 
-    [HttpGet(Name = "TriggerOpenAI")]
-    public async Task<IActionResult> TriggerOpenAI([FromQuery] string input)
-    {
-        var response = await _promptService.TriggerOpenAI(input);
-        return Ok(response);
+        public PromptController(IPromptService promptService)
+        {
+            _promptService = promptService;
+        }
+
+        [HttpPost(Name = "TriggerFoodImageGen")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> TriggerFoodItemImageGen(List<FoodItem> foodItems)
+        {
+            // Take list of food items and convert into a prompt for OpenAI
+
+            var foodItemNames = new List<string>();
+
+            foodItems.ForEach(foodItem => foodItemNames.Add(foodItem.Name));
+
+            var prompt = "Create an image of a tasty, edible meal anyone can make with the following food items: " 
+                         + string.Join(",", foodItemNames);
+
+            var response = await _promptService.TriggerOpenAiImageGen(prompt);
+            return Ok(response);
+        }
     }
 }

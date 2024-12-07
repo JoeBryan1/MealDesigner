@@ -1,9 +1,12 @@
 ﻿import { useState, useEffect } from 'react';
 
+import FoodItemService from "@/services/FoodItemService.ts";
+
 import { Button } from "@/components/ui/button"
 import {Spinner} from "@/components/ui/spinner.tsx";
 import {SelectMap, SelectMapFoodItem} from "@/components/SelectMap.tsx";
 import FoodItemCard from "@/components/FoodItemCard.tsx";
+import PromptService from "@/services/PromptService.ts";
 
 export type FoodItem = {
     foodItemId: number;
@@ -16,38 +19,36 @@ export type FoodItem = {
 }
 
 const FoodPicker= () => {
+    
+    const foodItemService = new FoodItemService();
+    const promptService = new PromptService();
 
     const [foodItemGroups, setFoodItemGroups] = useState<string[]>([]);
     const [foodNames, setFoodNames] = useState<FoodItem[]>([]);
     const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
-    
     const [selectedFoodGroup, setSelectedFoodGroup] = useState<string>("");
     let selectedFoodItemId: number;
     
     const [isLoaded, setIsLoaded] = useState(false);
     
+    const [mealURL, setMealURL] = useState("");
+    
     useEffect(() => {
-        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/foodgroups')
-            .then((results) => {
-                return results.json();
-            })
-            .then(data => {
+        foodItemService.getAllGroups()
+            .then((data) => {
                 setFoodItemGroups(data);
                 setIsLoaded(true);
-            })
+            });
     }, [])
     
     const getFoodItemsFromGroup = (foodGroup: string) =>
     {
         setSelectedFoodGroup(foodGroup);
         
-        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/foodgroup/'+foodGroup)
-            .then((results) => {
-                return results.json();
-            })
-            .then(data => {
+        foodItemService.getByGroup(foodGroup)
+            .then((data) => {
                 setFoodNames(data);
-            });
+            })
     }
     
     const addSelectedFood = (id: number) =>
@@ -55,15 +56,18 @@ const FoodPicker= () => {
         if (id === undefined)
             return;
         
-        fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/'+id)
-            .then((results) => {
-            return results.json();
-            })
-            .then(data => {
+        foodItemService.getById(id)
+            .then((data) => {
                 if (!selectedFoods.includes(data)) {
                     setSelectedFoods(selectedFoods => [...selectedFoods, data]);
                 }
-            })
+            });
+    }
+    
+    const generateMeal = () =>
+    {
+        promptService.TriggerFoodImageGen(selectedFoods)
+            .then((data) => {setMealURL(data)})
     }
     
     if (isLoaded) {
@@ -73,12 +77,20 @@ const FoodPicker= () => {
                            onValueChange={(foodGroup) => getFoodItemsFromGroup(foodGroup)} />
 
                 {selectedFoodGroup != "" &&
-                    <SelectMapFoodItem array={foodNames} 
+                    <SelectMapFoodItem array={foodNames}
                                onValueChange={(value) => selectedFoodItemId = Number(value)} />
                 }
 
                 <Button onClick={() => addSelectedFood(selectedFoodItemId)}>Add to Selection</Button>
                 <FoodItemCard selectedFoodsArray={selectedFoods} />
+                
+                {selectedFoods.length > 0 &&
+                    <Button onClick={() => generateMeal()}>Design Meal</Button>
+                }
+
+                {mealURL != "" && 
+                    <img src={mealURL}/>
+                }
             </main>
         )
     }

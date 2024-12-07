@@ -15,16 +15,17 @@ public class PromptService : IPromptService
         _configuration = configuration;
     }
 
-    public async Task<string> TriggerOpenAI(string prompt)
+    public async Task<string> TriggerOpenAiImageGen(string prompt)
     {
-        var apiKey = _configuration["OpenAISetting:APIKey"];
-        var baseUrl = _configuration["OpenAISetting:BaseUrl"];
+        var apiKey = _configuration["OpenAISettings:APIKey"];
+        var baseUrl = _configuration["OpenAISettings:BaseUrl"];
         
         HttpClient client = new HttpClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
         var request = new OpenAiImageRequestDto
         {
+            Model="dall-e-3",
             Prompt = prompt
         };
         
@@ -35,7 +36,7 @@ public class PromptService : IPromptService
         var resJson = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
-            var errorResponse = JsonSerializer.Deserialize<OpenAIErrorResponseDto>(resJson);
+            var errorResponse = JsonSerializer.Deserialize<OpenAiErrorResponseDto>(resJson);
             throw new Exception(errorResponse?.Error.Message);
         }
         var data = JsonSerializer.Deserialize<OpenAiImageResponseDto>(resJson);
@@ -46,13 +47,13 @@ public class PromptService : IPromptService
 }
 
 
-public class OpenAIErrorResponseDto
+public class OpenAiErrorResponseDto
 {
     [JsonPropertyName("error")]
-    public required OpenAIError Error { get; set; }
+    public required OpenAiError Error { get; set; }
 }
     
-public class OpenAIError
+public class OpenAiError
 {
     [JsonPropertyName("message")]
     public required string Message { get; set; }

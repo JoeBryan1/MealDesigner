@@ -1,7 +1,17 @@
 ﻿import {FoodItem} from "../pages/FoodPicker";
 
+export type RecipeProperties = {
+    recipeName: string;
+    recipe: string;
+}
+
+export type PromptResponse = {
+    recipeProperties: RecipeProperties;
+    imgUrl: string;
+}
+
 export default class PromptService {
-    async TriggerFoodImageGen(foodItemArray: FoodItem[]) : Promise<string> {
+    async TriggerFoodImageGen(foodItemArray: FoodItem[]) : Promise<PromptResponse> {
         return await fetch('http://localhost:5244/api/prompt', {
             method: 'POST',
             headers: {
@@ -10,7 +20,7 @@ export default class PromptService {
             },
             body: JSON.stringify(foodItemArray)
         }).then((results) => {
-                return results.text();
+                return results.json();
             })
     }
 }

@@ -1,6 +1,9 @@
-﻿namespace MealDesigner.Server.Interfaces;
+﻿using MealDesigner.Server.Models;
+using MealDesigner.Server.Service.DTOs;
+
+namespace MealDesigner.Server.Interfaces;
 
 public interface IPromptService
 {
-    Task<string> TriggerOpenAiImageGen(string prompt);
+    Task<PromptResponseDto> TriggerRecipeGen(List<FoodItem> foodItems);
 }

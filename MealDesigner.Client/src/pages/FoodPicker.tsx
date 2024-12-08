@@ -31,7 +31,9 @@ const FoodPicker= () => {
     
     const [isLoaded, setIsLoaded] = useState(false);
     
-    const [mealURL, setMealURL] = useState("");
+    const [imgUrl, setImgUrl] = useState("");
+    const [recipeName, setRecipeName] = useState("");
+    const [recipe, setRecipe] = useState("");
     
     useEffect(() => {
         foodItemService.getAllGroups()
@@ -67,7 +69,11 @@ const FoodPicker= () => {
     const generateMeal = () =>
     {
         promptService.TriggerFoodImageGen(selectedFoods)
-            .then((data) => {setMealURL(data)})
+            .then((promptResponse) => {
+                setImgUrl(promptResponse.imgUrl);
+                setRecipeName(promptResponse.recipeProperties.recipeName);
+                setRecipe(promptResponse.recipeProperties.recipe);
+            })
     }
     
     if (isLoaded) {
@@ -88,8 +94,12 @@ const FoodPicker= () => {
                     <Button onClick={() => generateMeal()}>Design Meal</Button>
                 }
 
-                {mealURL != "" && 
-                    <img src={mealURL}/>
+                {imgUrl != "" &&
+                    <div>
+                        <h1>{recipeName}</h1>
+                        <p>{recipe}</p>
+                        <img src={imgUrl}/>
+                    </div>
                 }
             </main>
         )

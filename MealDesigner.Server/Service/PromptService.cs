@@ -1,27 +1,116 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using MealDesigner.Server.Interfaces;
+using MealDesigner.Server.Models;
+using MealDesigner.Server.Service.DTOs;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MealDesigner.Server.Service;
 
 public class PromptService : IPromptService
 {
-    public readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
     public PromptService(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    public async Task<string> TriggerOpenAiImageGen(string prompt)
+    public async Task<PromptResponseDto> TriggerRecipeGen(List<FoodItem> foodItems)
     {
-        var apiKey = _configuration["OpenAISettings:APIKey"];
-        var baseUrl = _configuration["OpenAISettings:BaseUrl"];
+        var foodItemNames = new List<string>();
+            
+        foodItems.ForEach(foodItem => foodItemNames.Add(foodItem.Name));
+            
+        var textPrompt = "Generate a recipe and a name for the recipe which must contain the following ingredients: " 
+                         + string.Join(",", foodItemNames);
+            
+            
+        var mealProperties = await TriggerOpenAiTextGen(textPrompt);
+            
+        var mealName = mealProperties.RecipeName;
+
+        var imgPrompt = "Generate an image of " + mealName;
+
+        var imgUrl = await TriggerOpenAiImageGen(imgPrompt);
+
+        var response = new PromptResponseDto()
+        {
+            RecipeProperties = mealProperties,
+            ImgUrl = imgUrl
+        };
+
+        return response;
+    }
+    
+    private async Task<OpenAiJsonResponse> TriggerOpenAiTextGen(string prompt)
+    {
+        var baseUrl = _configuration["OpenAISettings:TextGenUrl"];
+
+        var systemMessage = new OpenAiRequestMessageDto
+        {
+            Role = "system",
+            Content = "You generate a recipe and a name and input them into the JSON"
+        };
+
+        var userMessage = new OpenAiRequestMessageDto
+        {
+            Role = "user",
+            Content = prompt
+        };
+
+        var responseFormat = new OpenAiResponseFormat
+        {
+            Type = "json_schema",
+            JsonSchema = new OpenAiJsonSchema
+            {
+                Name = "recipe_schema",
+                Strict = true,
+                Schema = new OpenAiSchema
+                {
+                    Type = "object",
+                    Properties = new MealProperties
+                    {
+                        RecipeName = new OpenAiJsonProperty
+                        {
+                            Description = "This is the name of the recipe",
+                            Type = "string",
+                        },
+                        Recipe = new OpenAiJsonProperty
+                        {
+                            Description = "This is the recipe",
+                            Type = "string",
+                        }
+                    },
+                    AdditionalProperties = false,
+                    Required = ["recipeName", "recipe"]
+                }
+            }
+        };
         
-        HttpClient client = new HttpClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        Console.WriteLine(JsonSerializer.Serialize(responseFormat));
+        
+        var request = new OpenAiTextRequestDto
+        {
+            Messages = [systemMessage, userMessage],
+            Model = "gpt-4o",
+            ResponseFormat = responseFormat
+        };
+        
+        var resJson = await SendOpenAiRequest(request, baseUrl);
+        
+        var data = JsonSerializer.Deserialize<OpenAiTextResponseDto>(resJson);
+        
+        var responseText = data.Choices.FirstOrDefault().Message.Content;
+        
+        var mealProperties = JsonSerializer.Deserialize<OpenAiJsonResponse>(responseText);
+
+        return mealProperties;
+    }
+
+    private async Task<string> TriggerOpenAiImageGen(string prompt)
+    {
+        var baseUrl = _configuration["OpenAISettings:ImageGenUrl"];
 
         var request = new OpenAiImageRequestDto
         {
@@ -29,83 +118,32 @@ public class PromptService : IPromptService
             Prompt = prompt
         };
         
-        var json = JsonSerializer.Serialize(request);
-        Console.WriteLine(json);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await client.PostAsync(baseUrl, content);
-        var resJson = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorResponse = JsonSerializer.Deserialize<OpenAiErrorResponseDto>(resJson);
-            throw new Exception(errorResponse?.Error.Message);
-        }
+        var resJson = await SendOpenAiRequest(request, baseUrl);
+        
         var data = JsonSerializer.Deserialize<OpenAiImageResponseDto>(resJson);
         var responseText = data.OpenAiImageUrls.FirstOrDefault().Url;
 
         return responseText;
     }
-}
 
-
-public class OpenAiErrorResponseDto
-{
-    [JsonPropertyName("error")]
-    public required OpenAiError Error { get; set; }
-}
-    
-public class OpenAiError
-{
-    [JsonPropertyName("message")]
-    public required string Message { get; set; }
-
-    [JsonPropertyName("type")]
-    public required string Type { get; set; }
-
-    [JsonPropertyName("param")]
-    public required string Param { get; set; }
-
-    [JsonPropertyName("code")]
-    public required string Code { get; set; }
-}
-    
-public class OpenAiImageRequestDto
-{
-    [JsonPropertyName("prompt")]
-    public required string Prompt { get; set; }
+    private async Task<string> SendOpenAiRequest(object request, string url)
+    {
+        var apiKey = _configuration["OpenAISettings:APIKey"];
         
-    [JsonPropertyName("model")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Model { get; set; }
-    
-    [JsonPropertyName("n")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? NumImages { get; set; }
-    
-    [JsonPropertyName("quality")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Quality { get; set; }
-    
-    [JsonPropertyName("response_format")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? ResponseFormat { get; set; }
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         
-    [JsonPropertyName("size")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Size { get; set; }
+        var json = JsonSerializer.Serialize(request);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync(url, content);
+        var resJson = await response.Content.ReadAsStringAsync();
         
-    [JsonPropertyName("style")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Style { get; set; }
-}
-    
-public class OpenAiImageResponseDto
-{
-    [JsonPropertyName("data")]
-    public required List<OpenAiImageUrlsDto> OpenAiImageUrls  { get; set; }
-}
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorResponse = JsonSerializer.Deserialize<OpenAiErrorResponseDto>(resJson);
+            throw new Exception(errorResponse?.Error.Message);
+        }
 
-public class OpenAiImageUrlsDto
-{
-    [JsonPropertyName("url")]
-    public required string Url { get; set; }
+        return resJson;
+    }
 }

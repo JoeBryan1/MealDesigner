@@ -6,7 +6,7 @@ export const About = () => {
             <h1 className={"text-3xl font-bold pb-3"}>About</h1>
             <div className={"flex flex-col gap-4"}>
                 <p>
-                    Meal Designer AI is my personal project to show my proficiency in popular a tech-stack.
+                    Meal Designer AI is my personal project to show my proficiency in a popular tech-stack.
                     The website is made using React as a front-end and .Net Core as a back-end.
                     The front-end uses Vite + shadcn + TailwindCSS.
                     The back-end uses .Net Core 8 + Entity Framework + CosmosDB.

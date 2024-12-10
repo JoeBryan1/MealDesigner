@@ -1,11 +1,13 @@
 ﻿import { useState, useEffect } from 'react';
 
+import Markdown from 'react-markdown';
+
 import FoodItemService from "@/services/FoodItemService.ts";
 
 import { Button } from "@/components/ui/button"
 import {Spinner} from "@/components/ui/spinner.tsx";
-import {SelectMap, SelectMapFoodItem} from "@/components/SelectMap.tsx";
-import FoodItemCard from "@/components/FoodItemCard.tsx";
+import {SelectMap, SelectMapFoodItem} from "@/components/select-map.tsx";
+import FoodItemCard from "@/components/food-item-card.tsx";
 import PromptService from "@/services/PromptService.ts";
 
 export type FoodItem = {
@@ -30,6 +32,8 @@ const FoodPicker= () => {
     let selectedFoodItemId: number;
     
     const [isLoaded, setIsLoaded] = useState(false);
+    
+    const [selecting, setIsSelecting] = useState(true);
     
     const [imgUrl, setImgUrl] = useState("");
     const [recipeName, setRecipeName] = useState("");
@@ -68,15 +72,19 @@ const FoodPicker= () => {
     
     const generateMeal = () =>
     {
+        setIsSelecting(false);
+        setIsLoaded(false);
+        
         promptService.TriggerFoodImageGen(selectedFoods)
             .then((promptResponse) => {
                 setImgUrl(promptResponse.imgUrl);
                 setRecipeName(promptResponse.recipeProperties.recipeName);
                 setRecipe(promptResponse.recipeProperties.recipe);
+                setIsLoaded(true);
             })
     }
     
-    if (isLoaded) {
+    if (isLoaded && selecting) {
         return (
             <main>
                 <SelectMap array={foodItemGroups} 
@@ -93,18 +101,21 @@ const FoodPicker= () => {
                 {selectedFoods.length > 0 &&
                     <Button onClick={() => generateMeal()}>Design Meal</Button>
                 }
-
-                {imgUrl != "" &&
-                    <div>
-                        <h1>{recipeName}</h1>
-                        <p>{recipe}</p>
-                        <img src={imgUrl}/>
-                    </div>
-                }
+                
             </main>
         )
     }
-    else {
+    else if (isLoaded && !selecting) {
+        return(
+            <main>
+                <div>
+                    <h1>{recipeName}</h1>
+                    <Markdown>{recipe}</Markdown>
+                    <img src={imgUrl}/>
+                </div>
+            </main>
+        )
+    } else {
         return (
             <main>
                 <Spinner size="lg" className="bg-black dark:bg-white"/>

@@ -1,5 +1,6 @@
 import { Home }  from "@/pages/Home";
-import FoodPicker from "@/pages/FoodPicker.tsx";
+import FoodPicker from "@/pages/FoodPicker";
+import About from "@/pages/About";
 
 const AppRoutes = [
     {
@@ -7,8 +8,12 @@ const AppRoutes = [
         element: <Home />
     },
     {
-        path: '/food-picker',
+        path: '/create',
         element: <FoodPicker />
+    },
+    {
+        path: 'about',
+        element: <About />
     }
 ];
 

@@ -11,7 +11,7 @@ export type FoodItemCardProps = {
 
 const FoodItemCard = (props: FoodItemCardProps) => {
     const replaceImage = (error: SyntheticEvent<HTMLImageElement, Event>) => {
-        error.currentTarget.src = "src/assets/DefaultImage.png";
+        error.currentTarget.src = "https://mdstorageac.blob.core.windows.net/fooditempics/0.png";
     }
     
     return (

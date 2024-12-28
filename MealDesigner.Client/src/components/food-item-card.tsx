@@ -7,6 +7,7 @@ import {FoodItem} from "@/pages/FoodPicker.tsx";
 
 export type FoodItemCardProps = {
     selectedFoodsArray: FoodItem[];
+    onClose: (index: number) => void;
 }
 
 const FoodItemCard = (props: FoodItemCardProps) => {
@@ -16,7 +17,7 @@ const FoodItemCard = (props: FoodItemCardProps) => {
     
     return (
         <div className="flex space-x-5">
-            {props.selectedFoodsArray.map((food) =>
+            {props.selectedFoodsArray.map((food, index) =>
                 <Card key={food.foodItemId} className={"w-[400px]"}>
                     <CardHeader>
                         <CardTitle>
@@ -45,6 +46,9 @@ const FoodItemCard = (props: FoodItemCardProps) => {
                                 <CollapsibleContent className="space-y-2">
                                     <CardDescription>{food.description}</CardDescription>
                                 </CollapsibleContent>
+                            </div>
+                            <div className="flex justify-between space-x-4 px-4">
+                                <Button onClick={() => props.onClose(index)}>Remove</Button>
                             </div>
                         </Collapsible>
                     </CardHeader>

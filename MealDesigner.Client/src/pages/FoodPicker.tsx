@@ -29,7 +29,7 @@ const FoodPicker= () => {
     const [foodNames, setFoodNames] = useState<FoodItem[]>([]);
     const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
     const [selectedFoodGroup, setSelectedFoodGroup] = useState<string>("");
-    let selectedFoodItemId: number;
+    const [selectedFoodItemId, setSelectedFoodItemId] = useState<number>();
     
     const [isLoaded, setIsLoaded] = useState(false);
     
@@ -57,10 +57,12 @@ const FoodPicker= () => {
             })
     }
     
-    const addSelectedFood = (id: number) =>
+    const addSelectedFood = (id?: number) =>
     {
         if (id === undefined)
             return;
+        
+        console.log(selectedFoods)
         
         foodItemService.getById(id)
             .then((data) => {
@@ -83,6 +85,10 @@ const FoodPicker= () => {
                 setIsLoaded(true);
             })
     }
+
+    const removeFoodItem = (index: number)=> {
+        setSelectedFoods(selectedFoods => selectedFoods.filter((_, i) => i !== index));
+    }
     
     if (isLoaded && selecting) {
         return (
@@ -92,11 +98,11 @@ const FoodPicker= () => {
 
                 {selectedFoodGroup != "" &&
                     <SelectMapFoodItem array={foodNames}
-                               onValueChange={(value) => selectedFoodItemId = Number(value)} />
+                               onValueChange={(value) => setSelectedFoodItemId(Number(value))} />
                 }
 
                 <Button onClick={() => addSelectedFood(selectedFoodItemId)}>Add to Selection</Button>
-                <FoodItemCard selectedFoodsArray={selectedFoods} />
+                <FoodItemCard selectedFoodsArray={selectedFoods} onClose={removeFoodItem}/>
                 
                 {selectedFoods.length > 0 &&
                     <Button onClick={() => generateMeal()}>Design Meal</Button>

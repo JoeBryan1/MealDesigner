@@ -63,10 +63,10 @@ public class OpenAiJsonProperty
 public class MealProperties
 {
     [JsonPropertyName("recipeName")]
-    public OpenAiJsonProperty RecipeName { get; set; }
+    public required OpenAiJsonProperty RecipeName { get; set; }
     
     [JsonPropertyName("recipe")]
-    public OpenAiJsonProperty Recipe { get; set; }
+    public required OpenAiJsonProperty Recipe { get; set; }
 }
 
 public class OpenAiRequestMessageDto

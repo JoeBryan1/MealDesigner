@@ -1,44 +1,25 @@
-﻿import { useState, useEffect } from 'react';
-
-import Markdown from 'react-markdown';
+﻿import { useState, useEffect, useCallback } from 'react';
 
 import FoodItemService from "@/services/FoodItemService.ts";
+import PromptService, {PromptResponse, TriggerFoodGenDTO} from "@/services/PromptService.ts";
+import Loading from "@/pages/Loading.tsx";
+import Recipe from "@/pages/Recipe.tsx";
+import Designer from "@/pages/Designer.tsx";
 
-import { Button } from "@/components/ui/button"
-import {Spinner} from "@/components/ui/spinner.tsx";
-import {SelectMap, SelectMapFoodItem} from "@/components/select-map.tsx";
-import FoodItemCard from "@/components/food-item-card.tsx";
-import PromptService from "@/services/PromptService.ts";
-
-export type FoodItem = {
-    foodItemId: number;
-    name: string;
-    latinName: string;
-    description: string;
-    foodGroup: string;
-    subFoodgroup: string;
-    wikipediaId: string;
-}
+export const Cuisines: string[] = ["French", "Italian", "Mexican"]
 
 const FoodPicker= () => {
     
     const foodItemService = new FoodItemService();
     const promptService = new PromptService();
-
-    const [foodItemGroups, setFoodItemGroups] = useState<string[]>([]);
-    const [foodNames, setFoodNames] = useState<FoodItem[]>([]);
-    const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
-    const [selectedFoodGroup, setSelectedFoodGroup] = useState<string>("");
-    const [selectedFoodItemId, setSelectedFoodItemId] = useState<number>();
     
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isSelecting, setIsSelecting] = useState(true);
     
-    const [selecting, setIsSelecting] = useState(true);
+    const [promptResponse, setPromptResponse] = useState<PromptResponse>();
     
-    const [imgUrl, setImgUrl] = useState("");
-    const [recipeName, setRecipeName] = useState("");
-    const [recipe, setRecipe] = useState("");
-    
+    const [foodItemGroups, setFoodItemGroups] = useState<string[]>([]);
+
     useEffect(() => {
         foodItemService.getAllGroups()
             .then((data) => {
@@ -47,85 +28,30 @@ const FoodPicker= () => {
             });
     }, [])
     
-    const getFoodItemsFromGroup = (foodGroup: string) =>
-    {
-        setSelectedFoodGroup(foodGroup);
-        
-        foodItemService.getByGroup(foodGroup)
-            .then((data) => {
-                setFoodNames(data);
-            })
-    }
-    
-    const addSelectedFood = (id?: number) =>
-    {
-        if (id === undefined)
-            return;
-        
-        console.log(selectedFoods)
-        
-        foodItemService.getById(id)
-            .then((data) => {
-                if (!selectedFoods.includes(data)) {
-                    setSelectedFoods(selectedFoods => [...selectedFoods, data]);
-                }
-            });
-    }
-    
-    const generateMeal = () =>
+    const generateMeal = useCallback((request: TriggerFoodGenDTO) =>
     {
         setIsSelecting(false);
         setIsLoaded(false);
         
-        promptService.TriggerFoodImageGen(selectedFoods)
+        promptService.TriggerFoodImageGen(request)
             .then((promptResponse) => {
-                setImgUrl(promptResponse.imgUrl);
-                setRecipeName(promptResponse.recipeProperties.recipeName);
-                setRecipe(promptResponse.recipeProperties.recipe);
+                setPromptResponse(promptResponse);
                 setIsLoaded(true);
             })
-    }
-
-    const removeFoodItem = (index: number)=> {
-        setSelectedFoods(selectedFoods => selectedFoods.filter((_, i) => i !== index));
-    }
+    }, [isLoaded, isSelecting]);
     
-    if (isLoaded && selecting) {
+    if (isLoaded && isSelecting) {
         return (
-            <main>
-                <SelectMap array={foodItemGroups} 
-                           onValueChange={(foodGroup) => getFoodItemsFromGroup(foodGroup)} />
-
-                {selectedFoodGroup != "" &&
-                    <SelectMapFoodItem array={foodNames}
-                               onValueChange={(value) => setSelectedFoodItemId(Number(value))} />
-                }
-
-                <Button onClick={() => addSelectedFood(selectedFoodItemId)}>Add to Selection</Button>
-                <FoodItemCard selectedFoodsArray={selectedFoods} onClose={removeFoodItem}/>
-                
-                {selectedFoods.length > 0 &&
-                    <Button onClick={() => generateMeal()}>Design Meal</Button>
-                }
-                
-            </main>
+            <Designer foodItemGroups={foodItemGroups} generateMeal={generateMeal} />
         )
     }
-    else if (isLoaded && !selecting) {
+    else if (isLoaded && !isSelecting) {
         return(
-            <main>
-                <div>
-                    <h1>{recipeName}</h1>
-                    <Markdown>{recipe}</Markdown>
-                    <img src={imgUrl}/>
-                </div>
-            </main>
+            <Recipe promptResponse={promptResponse!} generateMeal={generateMeal} />
         )
     } else {
         return (
-            <main>
-                <Spinner size="lg" className="bg-black dark:bg-white"/>
-            </main>
+            <Loading/>
         )
     }
 }

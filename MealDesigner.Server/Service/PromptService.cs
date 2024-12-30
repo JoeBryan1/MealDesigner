@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using MealDesigner.Server.Controllers.DTOs;
 using MealDesigner.Server.Interfaces;
 using MealDesigner.Server.Models;
 using MealDesigner.Server.Service.DTOs;
@@ -16,14 +17,25 @@ public class PromptService : IPromptService
         _configuration = configuration;
     }
 
-    public async Task<PromptResponseDto> TriggerRecipeGen(List<FoodItem> foodItems)
+    public async Task<PromptResponseDto> TriggerRecipeGen(TriggerFoodGenDTO request)
     {
         var foodItemNames = new List<string>();
             
-        foodItems.ForEach(foodItem => foodItemNames.Add(foodItem.Name));
-            
-        var textPrompt = "Generate a recipe and a name for the recipe which must contain the following ingredients: " 
-                         + string.Join(",", foodItemNames);
+        request.FoodItems.ForEach(foodItem => foodItemNames.Add(foodItem.Name));
+
+        string textPrompt;
+
+        if (request.Cuisine == "")
+        {
+            textPrompt =
+                "Generate a recipe and a name for the recipe which must contain the following ingredients: "
+                + string.Join(",", foodItemNames);
+        }
+        else
+        {
+            textPrompt = "Generate a recipe and a name for the recipe for the " + request.Cuisine + " cuisine " +
+                             "which must contain the following ingredients: "+ string.Join(",", foodItemNames);
+        }
             
             
         var mealProperties = await TriggerOpenAiTextGen(textPrompt);
@@ -87,8 +99,6 @@ public class PromptService : IPromptService
                 }
             }
         };
-        
-        Console.WriteLine(JsonSerializer.Serialize(responseFormat));
         
         var request = new OpenAiTextRequestDto
         {

@@ -10,15 +10,20 @@ export type PromptResponse = {
     imgUrl: string;
 }
 
+export type TriggerFoodGenDTO = {
+    foodItems: FoodItem[];
+    cuisine?: string;
+}
+
 export default class PromptService {
-    async TriggerFoodImageGen(foodItemArray: FoodItem[]) : Promise<PromptResponse> {
-        return await fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/prompt', {
+    async TriggerFoodImageGen(request: TriggerFoodGenDTO) : Promise<PromptResponse> {
+        return await fetch('http://localhost:5244/api/prompt', {
             method: 'POST',
             headers: {
                 'Accept': '*/*',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(foodItemArray)
+            body: JSON.stringify(request)
         }).then((results) => {
                 return results.json();
             })

@@ -1,23 +1,31 @@
-﻿import {FoodItem} from "../pages/FoodPicker";
+﻿export type FoodItem = {
+    foodItemId: number;
+    name: string;
+    latinName: string;
+    description: string;
+    foodGroup: string;
+    subFoodgroup: string;
+    wikipediaId: string;
+}
 
 export default class FoodItemService {
 
     async getById(id: Number): Promise<FoodItem> {
-        return await fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/'+id)
+        return await fetch('http://localhost:5244/api/fooditem/'+id)
             .then((results) => {
                 return results.json();
             })
     }
     
     async getAllGroups() : Promise<string[]> {
-        return await fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/foodgroups')
+        return await fetch('http://localhost:5244/api/fooditem/foodgroups')
             .then((results) => {
                 return results.json();
             });
     }
     
     async getByGroup(foodGroup: string) : Promise<FoodItem[]> {
-        return await fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/fooditem/foodgroup/'+foodGroup)
+        return await fetch('http://localhost:5244/api/fooditem/foodgroup/'+foodGroup)
             .then((results) => {
                 return results.json();
             });

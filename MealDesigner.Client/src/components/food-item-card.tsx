@@ -3,7 +3,7 @@ import {Card, CardDescription, CardHeader, CardTitle} from "@/components/ui/card
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import { ChevronsUpDown } from "lucide-react"
-import {FoodItem} from "@/pages/FoodPicker.tsx";
+import {FoodItem} from "@/services/FoodItemService.ts";
 
 export type FoodItemCardProps = {
     selectedFoodsArray: FoodItem[];

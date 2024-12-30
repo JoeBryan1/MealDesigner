@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MealDesigner.Server.Controllers.DTOs;
+using Microsoft.AspNetCore.Mvc;
 using MealDesigner.Server.Interfaces;
-using MealDesigner.Server.Models;
-using MealDesigner.Server.Service.DTOs;
 
 namespace MealDesigner.Server.Controllers
 {
@@ -19,9 +18,9 @@ namespace MealDesigner.Server.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> TriggerFoodTextImageGen(List<FoodItem> foodItems)
+        public async Task<IActionResult> TriggerFoodGen(TriggerFoodGenDTO request)
         {
-            var response = await _promptService.TriggerRecipeGen(foodItems);
+            var response = await _promptService.TriggerRecipeGen(request);
             return Ok(response);
         }
     }

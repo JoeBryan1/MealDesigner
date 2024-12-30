@@ -1,9 +1,10 @@
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
-import {FoodItem} from "@/pages/FoodPicker.tsx";
+import {FoodItem} from "@/services/FoodItemService.ts";
 
 export type SelectMapProps = {
     array: any[];
     onValueChange(value: string): void;
+    placeholder: string;
 }
 
 export type SelectMapFoodItemProps = {
@@ -15,8 +16,8 @@ export const SelectMap = (props: SelectMapProps) => {
     return (
         <Select onValueChange={(value) => props.onValueChange(value)}>
             <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a food group"/>
-            </SelectTrigger>
+                <SelectValue placeholder={props.placeholder} />
+        </SelectTrigger>
             <SelectContent>
                 {props.array.map((item, index) => (
                     <SelectItem value={item} key={index}>

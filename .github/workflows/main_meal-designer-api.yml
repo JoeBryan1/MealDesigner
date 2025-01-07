@@ -11,6 +11,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions: 
+  actions: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -34,8 +37,6 @@ jobs:
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Delete Old Artifacts
-        permissions: 
-          actions: write
         uses: actions/github-script@v6
         id: artifact
         with:

@@ -34,7 +34,8 @@ jobs:
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Delete Old Artifacts
-        permissions: write-all
+        permissions: 
+          actions: write
         uses: actions/github-script@v6
         id: artifact
         with:

@@ -1,4 +1,4 @@
-﻿import {FoodItem} from "../pages/FoodPicker";
+﻿import {FoodItem} from "./FoodItemService";
 
 export type RecipeProperties = {
     recipeName: string;
@@ -13,6 +13,12 @@ export type PromptResponse = {
 export type TriggerFoodGenDTO = {
     foodItems: FoodItem[];
     cuisine?: string;
+    regenerate?: Regenerate;
+}
+
+export type Regenerate = {
+    regenerateRecipe: boolean;
+    recipe: string;
 }
 
 export default class PromptService {

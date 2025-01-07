@@ -1,8 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
-using MealDesigner.Server.Controllers.DTOs;
 using MealDesigner.Server.Interfaces;
-using MealDesigner.Server.Models;
 using MealDesigner.Server.Service.DTOs;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -17,27 +15,43 @@ public class PromptService : IPromptService
         _configuration = configuration;
     }
 
-    public async Task<PromptResponseDto> TriggerRecipeGen(TriggerFoodGenDTO request)
+    public async Task<PromptResponseDto> TriggerRecipeGen(TriggerFoodGenDto request)
     {
         var foodItemNames = new List<string>();
             
         request.FoodItems.ForEach(foodItem => foodItemNames.Add(foodItem.Name));
 
+        string cuisineText = "";
+
+        if (request.Cuisine != null)
+            cuisineText = " in the " + request.Cuisine + " cuisine";
+
         string textPrompt;
 
-        if (request.Cuisine == "")
+        if (request.Regenerate != null)
         {
-            textPrompt =
-                "Generate a recipe and a name for the recipe which must contain the following ingredients: "
-                + string.Join(",", foodItemNames);
+            if (request.Regenerate.RegenerateRecipe)
+            {
+                textPrompt =
+                    "Generate a recipe for " + request.Regenerate.Recipe + cuisineText +
+                    " which contains the following ingredients: "
+                    + string.Join(",", foodItemNames);
+            }
+            else {
+                textPrompt =
+                    "Generate a recipe and a name for the recipe which must contain the following ingredients: "
+                    + string.Join(",", foodItemNames)
+                    + ". DO NOT GENERATE A RECIPE FOR " + request.Regenerate.Recipe + "!";
+            }
         }
         else
         {
-            textPrompt = "Generate a recipe and a name for the recipe for the " + request.Cuisine + " cuisine " +
-                             "which must contain the following ingredients: "+ string.Join(",", foodItemNames);
+            textPrompt =
+                "Generate a recipe and a name for the recipe" + cuisineText +
+                " which must contain the following ingredients: " + string.Join(",", foodItemNames);
         }
-            
-            
+
+
         var mealProperties = await TriggerOpenAiTextGen(textPrompt);
             
         var mealName = mealProperties.RecipeName;

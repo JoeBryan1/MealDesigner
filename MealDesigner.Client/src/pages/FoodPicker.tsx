@@ -19,6 +19,12 @@ const FoodPicker= () => {
     const [promptResponse, setPromptResponse] = useState<PromptResponse>();
     
     const [foodItemGroups, setFoodItemGroups] = useState<string[]>([]);
+    
+    const [lastRequest, setLastRequest] = useState<TriggerFoodGenDTO>();
+
+    useEffect(() => {
+        localStorage.setItem("lastRequest", JSON.stringify(lastRequest));
+    }, [lastRequest]);
 
     useEffect(() => {
         foodItemService.getAllGroups()
@@ -32,6 +38,8 @@ const FoodPicker= () => {
     {
         setIsSelecting(false);
         setIsLoaded(false);
+        
+        setLastRequest(request);
         
         promptService.TriggerFoodImageGen(request)
             .then((promptResponse) => {

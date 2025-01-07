@@ -1,4 +1,4 @@
-﻿using MealDesigner.Server.Controllers.DTOs;
+﻿using MealDesigner.Server.Service.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MealDesigner.Server.Interfaces;
 
@@ -18,7 +18,7 @@ namespace MealDesigner.Server.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> TriggerFoodGen(TriggerFoodGenDTO request)
+        public async Task<IActionResult> TriggerFoodGen(TriggerFoodGenDto request)
         {
             var response = await _promptService.TriggerRecipeGen(request);
             return Ok(response);

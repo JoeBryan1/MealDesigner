@@ -23,7 +23,7 @@ export type Regenerate = {
 
 export default class PromptService {
     async TriggerFoodImageGen(request: TriggerFoodGenDTO) : Promise<PromptResponse> {
-        return await fetch('http://localhost:5244/api/prompt', {
+        return await fetch('https://meal-designer-api-fshcgpckhyfpf9bv.uksouth-01.azurewebsites.net/api/prompt', {
             method: 'POST',
             headers: {
                 'Accept': '*/*',
